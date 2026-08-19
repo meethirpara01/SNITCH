@@ -61,3 +61,55 @@ export const registerUser = async (req, res) => {
         });
     }
 };
+
+export const loginUser = async (req, res) => {
+    try {
+        const { email, identifier, password } = req.body;
+        const loginQuery = identifier || email;
+
+        if (!loginQuery || !password) {
+            return res.status(400).json({ 
+                message: 'Email or phone number and password are required' 
+            });
+        }
+
+        const user = await UserModel.findOne({
+            $or: [
+                { email: loginQuery.toLowerCase() },
+                { contact: loginQuery }
+            ]
+        });
+
+        if (!user) {
+            return res.status(401).json({ 
+                message: 'No account found with this email or phone number' 
+            });
+        }
+
+        const isMatch = await user.comparePassword(password);
+        if (!isMatch) {
+            return res.status(401).json({ 
+                message: 'Invalid credentials. Incorrect password.' 
+            });
+        }
+
+        const { token } = tokenGenerator(user);
+
+        res.status(200).json({
+            message: 'Login successful',
+            user: {
+                id: user._id,
+                fullName: user.fullName,
+                email: user.email,
+                contact: user.contact,
+                role: user.role
+            },
+            token
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Server error during login',
+            error: error.message
+        });
+    }
+};
