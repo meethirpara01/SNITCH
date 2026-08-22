@@ -113,3 +113,52 @@ export const loginUser = async (req, res) => {
         });
     }
 };
+
+export const googleCallback = async (req, res) => {
+
+    console.log(req.user);
+    res.redirect('http://localhost:5173/dashboard'); // Redirect to the home page or any other route
+    
+    // try {
+    //     const profile = req.user;
+    //     const { role } = req.body;
+
+    //     if (!profile) {
+    //         return res.status(400).json({ 
+    //             message: 'Google authentication failed' 
+    //         });
+    //     }
+
+    //     const email = profile.emails[0].value;
+    //     let user = await UserModel.findOne({ email });
+
+    //     if (!user) {
+    //         user = await UserModel.create({
+    //             fullName: profile.displayName,
+    //             email,
+    //             password: null,
+    //             contact: null,
+    //             role: role || 'buyer'
+    //         });
+    //     }
+
+    //     const { token } = tokenGenerator(user);
+
+    //     res.status(200).json({
+    //         message: 'Google login successful',
+    //         user: {
+    //             id: user._id,
+    //             fullName: user.fullName,
+    //             email: user.email,
+    //             contact: user.contact,
+    //             role: user.role
+    //         },
+    //         token
+    //     });
+    // } catch (error) {
+    //     res.status(500).json({
+    //         message: 'Server error during Google login',
+    //         error: error.message
+    //     });
+    // }
+};
