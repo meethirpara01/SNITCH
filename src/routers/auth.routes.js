@@ -1,4 +1,5 @@
 import express from "express";
+import CONFIG from "../config/config.js";
 import { registerValidator, loginValidator } from "../validators/auth.validators.js";
 import { registerUser, loginUser, googleCallback } from "../controller/auth.controller.js";
 import passport from "passport";
@@ -8,7 +9,7 @@ const router = express.Router();
 router.post("/register", registerValidator, registerUser);
 router.post("/login", loginValidator, loginUser);
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
-router.get("/google/callback", passport.authenticate("google", { session: false }, { failureRedirect: "http://localhost:5173/login" }), googleCallback);
+router.get("/google/callback", passport.authenticate("google", { session: false }, { failureRedirect: CONFIG.NODE_ENV === 'development' ? 'http://localhost:5173/login' : '/login' }), googleCallback);
 // And session: false only affects what happens after done(null, profile):
 // done(null, profile)
 //        ↓
