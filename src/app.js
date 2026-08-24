@@ -37,3 +37,52 @@ passport.use(new GoogleStrategy({
 app.use('/api/auth', authRoutes);
 
 export default app;
+
+// GOOGLE AUTHENTICATION FLOW
+// User
+//  ↓
+// /api/auth/google
+//  ↓
+// Passport
+//  ↓
+// Google
+//  ↓
+// User authenticates
+//  ↓
+// Google gives authorization CODE
+//  ↓
+// /api/auth/google/callback
+//  ↓
+// Passport receives AUTHORIZATION CODE
+//  ↓
+// Passport sends AUTHORIZATION CODE + client credentials → Google. - Request 1_Exchange code for token
+//  ↓
+// Google verifies AUTHORIZATION CODE
+//  ↓
+// Google returns ACCESS TOKEN
+//  ↓
+// Passport uses ACCESS TOKEN
+//  ↓
+// Passport (HTTP request to Google API) Request 2_Get user information
+//    │
+//    │ GET /userinfo
+//    │ Authorization: Bearer ACCESS_TOKEN
+//    ▼
+// Google
+//    │
+//    │ 200 OK
+//    │
+//    │ {
+//    │   id: "...",
+//    │   email: "...",
+//    │   name: "...",
+//    │   picture: "..."
+//    │ }
+//    ▼
+// Google returns user profile T Passport
+//  ↓
+// Passport calls done(null, profile)
+//  ↓
+// req.user
+//  ↓
+// googleCallback()
