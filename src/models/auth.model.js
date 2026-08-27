@@ -11,13 +11,18 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    googleId: {
+        type: String,
+        default: null,
+    },
     password: {
         type: String,
-        required: true,
+        required: [function () { return !this.googleId; }, 'Password is required if not using Google authentication'],
     },
     contact: {
         type: String,
-        required: true,
+        required: [function () { return !this.googleId; }, 'Contact number is required if not using Google authentication'],
+        unique: [function () { return !this.googleId; }, 'Contact number must be unique'],
     },
     role: {
         type: String,
@@ -27,8 +32,12 @@ const userSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 userSchema.pre('save', async function () {
-    if (!this.isModified('password')) return;
-    this.password = await bcrypt.hash(this.password, 10)
+    if (!this.password && !this.googleId) {
+        throw new Error('Password is required if not using Google authentication');
+    }
+    if (this.password) {
+        this.password = await bcrypt.hash(this.password, 10);
+    }
 });
 
 userSchema.methods.comparePassword = async function (password) {
