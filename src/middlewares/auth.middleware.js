@@ -26,3 +26,12 @@ export const authenticateToken = async (req, res, next) => {
         return res.status(403).json({ message: 'Invalid or expired token' });
     }
 };
+
+export const authorizeRoles = (...roles) => {
+    return (req, res, next) => {
+        if (!roles.includes(req.user.role.toString())) {
+            return res.status(403).json({ message: 'You do not have permission to perform this action' });
+        }
+        next();
+    };
+};

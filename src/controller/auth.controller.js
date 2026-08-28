@@ -162,17 +162,7 @@ export const googleCallback = async (req, res) => {
 
         res.cookie('token', token);
 
-        res.status(200).json({
-            message: 'Google login successful',
-            user: {
-                id: user._id,
-                fullName: user.fullName,
-                email: user.email,
-                contact: user.contact,
-                role: user.role
-            },
-            token
-        });
+        res.redirect(CONFIG.NODE_ENV === 'development' ? `http://localhost:5173/dashboard` : '/dashboard');
     } catch (error) {
         res.status(500).json({
             message: 'Server error during Google login',

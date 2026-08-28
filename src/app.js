@@ -6,7 +6,7 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import CONFIG from './config/config.js';
 
 import authRoutes from './routers/auth.routes.js';
-
+import productRoutes from './routers/product.routes.js';
 
 const app = express();
 
@@ -35,6 +35,7 @@ passport.use(new GoogleStrategy({
 
 
 app.use('/api/auth', authRoutes);
+app.use('/api/product', productRoutes);
 
 export default app;
 
