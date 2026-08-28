@@ -1,8 +1,9 @@
 import express from "express";
 import CONFIG from "../config/config.js";
 import { registerValidator, loginValidator } from "../validators/auth.validators.js";
-import { registerUser, loginUser, googleCallback, googleAuth } from "../controller/auth.controller.js";
+import { registerUser, loginUser, googleCallback, googleAuth, getMe } from "../controller/auth.controller.js";
 import passport from "passport";
+import { authenticateToken } from "../middlewares/auth.middleware.js";
 
 const router = express.Router();
 
@@ -19,5 +20,6 @@ router.get("/google/callback", passport.authenticate("google", { session: false,
 // Don't create Passport session
 //        ↓
 // Continue to googleCallback()
+router.get("/getMe", authenticateToken, getMe);
 
 export default router;

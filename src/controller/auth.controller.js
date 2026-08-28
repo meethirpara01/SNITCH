@@ -49,6 +49,15 @@ export const registerUser = async (req, res) => {
 
         const { token } = tokenGenerator(newUser);
 
+        // req.cookie('token', token, {
+        //     httpOnly: true,
+        //     secure: CONFIG.NODE_ENV === 'production',
+        //     sameSite: 'strict',
+        //     maxAge: 3600000 // 1 hour
+        // });
+        
+        res.cookie('token', token);
+
         res.status(201).json({ 
             message: 'User registered successfully',
             newUser,
@@ -95,6 +104,8 @@ export const loginUser = async (req, res) => {
         }
 
         const { token } = tokenGenerator(user);
+
+        res.cookie('token', token);
 
         res.status(200).json({
             message: 'Login successful',
@@ -149,6 +160,8 @@ export const googleCallback = async (req, res) => {
 
         const { token } = tokenGenerator(user);
 
+        res.cookie('token', token);
+
         res.status(200).json({
             message: 'Google login successful',
             user: {
@@ -163,6 +176,30 @@ export const googleCallback = async (req, res) => {
     } catch (error) {
         res.status(500).json({
             message: 'Server error during Google login',
+            error: error.message
+        });
+    }
+};
+
+export const getMe = async (req, res) => {
+    try {
+        const userId = req.user.id;
+
+        const user = await UserModel.findById(userId).select('-password -__v');
+
+        if (!user) {
+            return res.status(404).json({ 
+                message: 'User not found' 
+            });
+        }
+
+        res.status(200).json({
+            message: 'User retrieved successfully',
+            user
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Server error while retrieving user',
             error: error.message
         });
     }
